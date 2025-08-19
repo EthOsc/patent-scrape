@@ -1,3 +1,4 @@
+// netlify/functions/search.js
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 exports.handler = async (event, context) => {
@@ -151,15 +152,15 @@ async function getUSPTOData(keywords, maxResults) {
       
       // Extract inventors properly
       const inventors = [];
-      if (metadata.applicantBag) {
-        metadata.applicantBag.forEach(applicant => {
-          if (applicant.applicantTypeCategory === 'INVENTOR') {
-            const firstName = applicant.applicantNameBag?.firstName || '';
-            const lastName = applicant.applicantNameBag?.lastName || '';
-            const name = `${firstName} ${lastName}`.trim() || 'Unknown';
-            const location = applicant.applicantResidenceData?.addressBook?.formattedNameAddress?.name?.displayName || 'Unknown';
-            inventors.push({ name, location });
-          }
+      if (metadata.inventorBag) {
+        metadata.inventorBag.forEach(inventor => {
+          const firstName = inventor.firstName || '';
+          const lastName = inventor.lastName || '';
+          const name = `${firstName} ${lastName}`.trim() || 'Unknown';
+          const location = inventor.correspondenceAddressBag && inventor.correspondenceAddressBag.length > 0 
+            ? `${inventor.correspondenceAddressBag[0].cityName || ''}, ${inventor.correspondenceAddressBag[0].geographicRegionName || ''}`.trim() 
+            : 'Unknown';
+          inventors.push({ name, location });
         });
       }
 
@@ -167,11 +168,8 @@ async function getUSPTOData(keywords, maxResults) {
       const assignees = [];
       if (metadata.applicantBag) {
         metadata.applicantBag.forEach(applicant => {
-          if (applicant.applicantTypeCategory === 'ASSIGNEE') {
-            const orgName = applicant.applicantNameBag?.organizationName;
-            const personName = applicant.applicantNameBag?.personName;
-            const name = orgName || personName || 'Unknown Organization';
-            assignees.push({ name, type: 'Organization' });
+          if (applicant.applicantNameText) {
+            assignees.push({ name: applicant.applicantNameText, type: 'Organization' });
           }
         });
       }
@@ -182,8 +180,8 @@ async function getUSPTOData(keywords, maxResults) {
         abstract = publication.abstract;
       } else if (grant.abstract) {
         abstract = grant.abstract;
-      } else if (metadata.inventionSubject) {
-        abstract = metadata.inventionSubject;
+      } else if (metadata.inventionTitle) {
+        abstract = metadata.inventionTitle;
       }
 
       return {
@@ -194,12 +192,14 @@ async function getUSPTOData(keywords, maxResults) {
         assignee: assignees.length > 0 ? assignees.map(a => a.name).join(', ') : 'Unknown',
         publication_date: metadata.publicationDate || publication.publicationDate || metadata.filingDate || 'Unknown',
         filing_date: metadata.filingDate || 'Unknown',
-        snippet: abstract,
+        snippet: abstract.substring(0, 200) + (abstract.length > 200 ? '...' : ''),
         abstract: abstract,
         status: metadata.applicationStatusDescriptionText || 'Unknown',
         classification: {
-          primary: metadata.patentClassificationDataBag?.[0]?.mainClassificationText || 'Unknown',
-          ipc: metadata.internationalPatentClassificationBag?.[0]?.classificationText || 'Unknown'
+          primary: metadata.uspcSymbolText || 'Unknown',
+          ipc: metadata.cpcClassificationBag && metadata.cpcClassificationBag.length > 0 
+            ? metadata.cpcClassificationBag[0] 
+            : 'Unknown'
         },
         inventors_detailed: inventors,
         assignees_detailed: assignees,
@@ -229,7 +229,19 @@ async function generatePracticalAnalysis(patents, searchTerm) {
 
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    // Try different model names
+    let model;
+    try {
+      model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    } catch (e) {
+      try {
+        model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
+      } catch (e2) {
+        console.error('Both model names failed:', e2);
+        throw new Error('No valid model available');
+      }
+    }
 
     // Prepare focused patent data for analysis
     const patentData = patents.slice(0, 8).map(p => ({
