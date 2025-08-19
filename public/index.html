@@ -67,7 +67,7 @@
                 <div class="md:w-32">
                     <select id="maxResults" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
                         <option value="10">10 results</option>
-                        <option value="20">20 results</option>
+                        <option value="20" selected>20 results</option>
                         <option value="25">25 results</option>
                     </select>
                 </div>
@@ -125,7 +125,7 @@
 
             try {
                 // Call your Netlify function
-                const response = await fetch('/search', {
+                const response = await fetch('/.netlify/functions/search', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ keywords, maxResults })
@@ -165,7 +165,7 @@
         function displayInsights(insights) {
             const container = document.getElementById('insightsContent');
             
-            if (!insights || Object.keys(insights).length === 0) {
+            if (!insights || Object.keys(insights).length === 0 || insights.error) {
                 container.innerHTML = '<p class="text-gray-500">No insights available</p>';
                 return;
             }
@@ -349,6 +349,8 @@
         function showError(message) {
             document.getElementById('error').classList.remove('hidden');
             document.getElementById('errorMessage').textContent = message;
+            document.getElementById('results').classList.add('hidden');
+            hideLoading();
         }
 
         // Enter key support
