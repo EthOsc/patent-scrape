@@ -3,958 +3,358 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patent Intelligence Platform</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>Patent Intelligence Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --accent: #06b6d4;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        .app-container {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 1.5rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo-icon {
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
             width: 40px;
             height: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 3rem 2rem;
-            width: 100%;
-        }
-
-        .hero-section {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.8));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .hero-subtitle {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        /* Search Section */
-        .search-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 2.5rem;
-            margin-bottom: 3rem;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-form {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .search-input-container {
-            flex: 1;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-400);
-            font-size: 1.1rem;
-        }
-
-        .search-btn {
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            white-space: nowrap;
-        }
-
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-        }
-
-        .search-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .search-options {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-            text-align: left;
-        }
-
-        .option-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .option-label {
-            font-size: 0.9rem;
-            color: var(--gray-600);
-            font-weight: 500;
-        }
-
-        .option-input {
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--gray-300);
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        /* Results Section */
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 0 0.5rem;
-        }
-
-        .results-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-        }
-
-        .results-meta {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
-        }
-
-        /* Patent Cards */
-        .patents-grid {
-            display: grid;
-            gap: 2rem;
-            grid-template-columns: 1fr;
-        }
-
-        .patent-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            border: 1px solid var(--gray-200);
-        }
-
-        .patent-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-        }
-
-        .patent-header {
-            padding: 2rem;
-            background: linear-gradient(135deg, var(--gray-50), white);
-            border-bottom: 1px solid var(--gray-100);
-        }
-
-        .patent-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--gray-900);
-            margin-bottom: 1rem;
-            line-height: 1.4;
-        }
-
-        .patent-meta-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .meta-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .meta-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--gray-500);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .meta-value {
-            font-size: 1rem;
-            color: var(--gray-900);
-            font-weight: 500;
-        }
-
-        .patent-body {
-            padding: 2rem;
-        }
-
-        .abstract-section {
-            margin-bottom: 2rem;
-        }
-
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 1rem;
-        }
-
-        .abstract-content {
-            background: var(--gray-50);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border-left: 4px solid var(--primary);
-            line-height: 1.7;
-            color: var(--gray-700);
-        }
-
-        /* AI Analysis Section */
-        .ai-section {
-            border-top: 1px solid var(--gray-100);
-            padding-top: 2rem;
-        }
-
-        .ai-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 1rem;
-        }
-
-        .ai-header:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
-        }
-
-        .ai-title {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-
-        .ai-toggle {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .ai-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .ai-summary {
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            border: 1px solid #bfdbfe;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .ai-summary-title {
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .ai-summary-content {
-            color: var(--gray-700);
-            line-height: 1.6;
-        }
-
-        .ai-full-analysis {
-            display: none;
-            background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 2rem;
-            line-height: 1.7;
-            color: var(--gray-700);
-        }
-
-        .ai-full-analysis.show {
-            display: block;
-            animation: slideDown 0.3s ease;
-        }
-
-        .ai-full-analysis h4 {
-            color: var(--gray-900);
-            font-size: 1.2rem;
-            margin: 2rem 0 1rem 0;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--gray-100);
-        }
-
-        .ai-full-analysis h4:first-child {
-            margin-top: 0;
-        }
-
-        /* Loading State */
-        .loading-container {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: white;
-        }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top: 3px solid white;
-            border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 2rem;
+            margin: 20px auto;
         }
-
-        .loading-text {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .loading-subtext {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Error/Success States */
-        .alert {
-            padding: 1.5rem;
-            border-radius: 12px;
-            margin: 2rem 0;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-weight: 500;
-        }
-
-        .alert-error {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-        }
-
-        .alert-success {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #166534;
-        }
-
-        .alert-warning {
-            background: #fffbeb;
-            border: 1px solid #fed7aa;
-            color: #92400e;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .header-content {
-                padding: 0 1rem;
-            }
-            
-            .main-content {
-                padding: 2rem 1rem;
-            }
-            
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .search-form {
-                flex-direction: column;
-            }
-            
-            .search-options {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .patent-meta-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .results-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-        }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .insight-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
+        .insight-card:hover {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        .patent-card {
+            transition: all 0.3s ease;
+        }
+        .patent-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .maturity-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .maturity-early { background: #fef3c7; color: #92400e; }
+        .maturity-proof { background: #dbeafe; color: #1e40af; }
+        .maturity-pilot { background: #e0e7ff; color: #3730a3; }
+        .maturity-commercial { background: #d1fae5; color: #065f46; }
     </style>
 </head>
-<body>
-    <div class="app-container">
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <i class="fas fa-atom"></i>
-                    </div>
-                    <div class="logo-text">PatentIQ</div>
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-2">Patent Intelligence</h1>
+            <p class="text-gray-600">Real insights, not corporate jargon</p>
+        </div>
+
+        <!-- Search Form -->
+        <div class="bg-white rounded-lg shadow-sm border p-6 mb-8">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <input type="text" id="keywords" 
+                           placeholder="Enter technology or keywords..."
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                 </div>
-                <div class="status-indicator">
-                    <div class="status-dot"></div>
-                    <span>APIs Connected</span>
+                <div class="md:w-32">
+                    <select id="maxResults" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="10">10 results</option>
+                        <option value="20">20 results</option>
+                        <option value="25">25 results</option>
+                    </select>
                 </div>
+                <button onclick="searchPatents()" 
+                        class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
+                    Search
+                </button>
             </div>
-        </header>
+        </div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <!-- Hero Section -->
-            <section class="hero-section">
-                <h1 class="hero-title">Patent Intelligence Platform</h1>
-                <p class="hero-subtitle">Discover, analyze, and understand patents with AI-powered insights and comprehensive business intelligence</p>
-            </section>
+        <!-- Loading -->
+        <div id="loading" class="hidden text-center">
+            <div class="loading-spinner"></div>
+            <p class="text-gray-600">Analyzing patents...</p>
+        </div>
 
-            <!-- Search Section -->
-            <section class="search-container">
-                <form class="search-form" onsubmit="return false;">
-                    <div class="search-input-container">
-                        <i class="fas fa-search search-icon"></i>
-                        <input 
-                            type="text" 
-                            id="searchInput" 
-                            class="search-input" 
-                            placeholder="Search patents by technology, keywords, or concepts..."
-                            required
-                        />
-                    </div>
-                    <button type="button" id="searchBtn" class="search-btn">
-                        <i class="fas fa-search"></i>
-                        <span>Search Patents</span>
-                    </button>
-                </form>
+        <!-- Results -->
+        <div id="results" class="hidden">
+            <!-- Insights Dashboard -->
+            <div id="insightsDashboard" class="mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">📊 Key Insights</h2>
+                <div id="insightsContent" class="grid lg:grid-cols-2 gap-6"></div>
+            </div>
 
-                <div class="search-options">
-                    <div class="option-group">
-                        <label class="option-label">Max Results</label>
-                        <select id="maxResults" class="option-input">
-                            <option value="10">10 patents</option>
-                            <option value="20" selected>20 patents</option>
-                            <option value="30">30 patents</option>
-                            <option value="50">50 patents</option>
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <label class="option-label">AI Analysis</label>
-                        <select id="aiDepth" class="option-input">
-                            <option value="summary">Summary Only</option>
-                            <option value="detailed" selected>Detailed Analysis</option>
-                            <option value="comprehensive">Comprehensive Report</option>
-                        </select>
-                    </div>
+            <!-- Patents List -->
+            <div id="patentsSection" class="bg-white rounded-lg shadow-sm border p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">Patent Details</h2>
+                    <div id="resultsMeta" class="text-sm text-gray-500"></div>
                 </div>
-            </section>
+                <div id="patentsList" class="space-y-4"></div>
+            </div>
+        </div>
 
-            <!-- Results Section -->
-            <div id="resultsContainer"></div>
-        </main>
+        <!-- Error Display -->
+        <div id="error" class="hidden bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex items-center">
+                <div class="text-red-600 mr-3">⚠️</div>
+                <p class="text-red-800" id="errorMessage"></p>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Application state
-        let currentResults = [];
-        
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeEventListeners();
-            checkAPIConnection();
-        });
-
-        function initializeEventListeners() {
-            const searchBtn = document.getElementById('searchBtn');
-            const searchInput = document.getElementById('searchInput');
-
-            searchBtn.addEventListener('click', performSearch);
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    performSearch();
-                }
-            });
-        }
-
-        async function checkAPIConnection() {
-            // In a real deployment, this would ping your server to check API status
-            // For now, we'll assume connected since you have the .env file
-            console.log('API connection check - using server-side APIs');
-        }
-
-        async function performSearch() {
-            const searchBtn = document.getElementById('searchBtn');
-            const searchInput = document.getElementById('searchInput');
-            const keywords = searchInput.value.trim();
+        async function searchPatents() {
+            const keywords = document.getElementById('keywords').value.trim();
+            const maxResults = parseInt(document.getElementById('maxResults').value);
 
             if (!keywords) {
-                showAlert('Please enter search keywords', 'error');
+                showError('Enter some keywords to search');
                 return;
             }
 
-            // Show loading state
-            searchBtn.disabled = true;
             showLoading();
 
             try {
-                // Make request to your server endpoint
-                const maxResults = document.getElementById('maxResults').value;
+                // Call your Netlify function
                 const response = await fetch('/search', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        keywords: keywords,
-                        maxResults: parseInt(maxResults)
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ keywords, maxResults })
                 });
 
+                const data = await response.json();
+
                 if (!response.ok) {
-                    throw new Error(`Search failed: ${response.status} ${response.statusText}`);
+                    throw new Error(data.error || 'Search failed');
                 }
 
-                const data = await response.json();
-                
-                if (data.patents && data.patents.length > 0) {
-                    currentResults = data.patents;
-                    displayResults(data.patents, keywords, data.landscape);
-                    showAlert(`Found ${data.patents.length} patents successfully`, 'success');
-                } else {
-                    showAlert('No patents found for your search terms. Try different keywords.', 'warning');
-                    document.getElementById('resultsContainer').innerHTML = '';
-                }
+                displayResults(data);
 
             } catch (error) {
                 console.error('Search error:', error);
-                showAlert(`Search failed: ${error.message}. Please try again.`, 'error');
+                showError(error.message);
             } finally {
-                searchBtn.disabled = false;
+                hideLoading();
             }
         }
 
-        function displayResults(patents, keywords, landscape) {
-            const container = document.getElementById('resultsContainer');
+        function displayResults(data) {
+            document.getElementById('results').classList.remove('hidden');
             
-            let html = `
-                <div class="results-header">
-                    <h2 class="results-title">Patent Search Results</h2>
-                    <div class="results-meta">
-                        Found ${patents.length} patents for "${keywords}"
-                    </div>
-                </div>
-                <div class="patents-grid">
-            `;
+            // Update metadata
+            const meta = data.metadata;
+            document.getElementById('resultsMeta').textContent = 
+                `${meta.resultsCount} patents • ${new Date(meta.timestamp).toLocaleString()}`;
 
-            patents.forEach((patent, index) => {
-                html += createPatentCard(patent, index);
-            });
+            // Display insights
+            displayInsights(data.insights);
 
-            html += '</div>';
+            // Display patents
+            displayPatents(data.patents);
+        }
 
-            // Add landscape analysis if available
-            if (landscape && landscape !== "Landscape analysis not configured. Please check your Gemini API key.") {
-                html += createLandscapeSection(landscape);
+        function displayInsights(insights) {
+            const container = document.getElementById('insightsContent');
+            
+            if (!insights || Object.keys(insights).length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No insights available</p>';
+                return;
+            }
+
+            let html = '';
+
+            // Tech Breakdown
+            if (insights.techBreakdown && insights.techBreakdown.length > 0) {
+                html += `<div class="bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🔧 How It Works</h3>
+                    <div class="space-y-4">`;
+                
+                insights.techBreakdown.forEach(tech => {
+                    html += `<div class="insight-card border-l-4 border-transparent pl-4 py-2">
+                        <div class="font-medium text-gray-900">${tech.mechanism}</div>
+                        <div class="text-sm text-gray-700 mt-1">${tech.howItWorks}</div>
+                        <div class="text-xs text-blue-600 mt-2">💡 ${tech.keyInnovation}</div>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            }
+
+            // Competitor Activity
+            if (insights.competitorActivity && insights.competitorActivity.topPlayers) {
+                html += `<div class="bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🏢 Who's Active</h3>`;
+                
+                if (insights.competitorActivity.topPlayers.length > 0) {
+                    html += `<div class="space-y-3 mb-4">`;
+                    insights.competitorActivity.topPlayers.forEach(player => {
+                        const trendColor = player.filingTrend === 'increasing' ? 'text-green-600' : 
+                                         player.filingTrend === 'decreasing' ? 'text-red-600' : 'text-gray-600';
+                        html += `<div class="flex justify-between items-start">
+                            <div>
+                                <div class="font-medium text-gray-900">${player.company}</div>
+                                <div class="text-sm text-gray-600">${player.focus}</div>
+                            </div>
+                            <div class="text-xs ${trendColor}">${player.filingTrend}</div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                if (insights.competitorActivity.filingPatterns) {
+                    html += `<div class="text-sm text-gray-700 pt-3 border-t border-gray-200">
+                        <strong>Filing Patterns:</strong> ${insights.competitorActivity.filingPatterns}
+                    </div>`;
+                }
+                html += `</div>`;
+            }
+
+            // Practical Uses
+            if (insights.practicalUses && insights.practicalUses.length > 0) {
+                html += `<div class="bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">💼 Real Applications</h3>
+                    <div class="space-y-3">`;
+                
+                insights.practicalUses.forEach(use => {
+                    const readyBadge = use.marketReady === 'yes' ? 'bg-green-100 text-green-800' :
+                                     use.marketReady === 'partial' ? 'bg-yellow-100 text-yellow-800' :
+                                     'bg-gray-100 text-gray-800';
+                    
+                    html += `<div class="insight-card border-l-4 border-transparent pl-4 py-2">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="font-medium text-gray-900">${use.application}</div>
+                            <span class="px-2 py-1 text-xs rounded-full ${readyBadge}">${use.marketReady}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">${use.obstacles}</div>
+                    </div>`;
+                });
+                html += `</div></div>`;
+            }
+
+            // Tech Maturity & Findings
+            if (insights.techMaturity || insights.interestingFindings) {
+                html += `<div class="bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">📈 Technology Status</h3>`;
+                
+                if (insights.techMaturity && insights.techMaturity !== 'unknown') {
+                    const maturityClass = insights.techMaturity.includes('early') ? 'maturity-early' :
+                                         insights.techMaturity.includes('proof') ? 'maturity-proof' :
+                                         insights.techMaturity.includes('pilot') ? 'maturity-pilot' :
+                                         insights.techMaturity.includes('commercial') ? 'maturity-commercial' :
+                                         'maturity-proof';
+                    
+                    html += `<div class="mb-4">
+                        <span class="maturity-badge ${maturityClass}">${insights.techMaturity}</span>
+                    </div>`;
+                }
+
+                if (insights.interestingFindings && insights.interestingFindings.length > 0) {
+                    html += `<div class="space-y-2">
+                        <div class="font-medium text-gray-700">Key Findings:</div>`;
+                    insights.interestingFindings.forEach(finding => {
+                        html += `<div class="text-sm text-gray-600">• ${finding}</div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                if (insights.patentStrength) {
+                    html += `<div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="text-sm"><strong>Patent Strength:</strong> ${insights.patentStrength}</div>
+                    </div>`;
+                }
+                
+                html += `</div>`;
+            }
+
+            // Raw analysis if JSON parsing failed
+            if (insights.rawAnalysis) {
+                html += `<div class="lg:col-span-2 bg-white rounded-lg shadow-sm border p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">🤖 Detailed Analysis</h3>
+                    <div class="text-sm text-gray-700 whitespace-pre-wrap">${insights.rawAnalysis}</div>
+                </div>`;
             }
 
             container.innerHTML = html;
         }
 
-        function createPatentCard(patent, index) {
-            const hasAIAnalysis = patent.analysis && patent.analysis !== "AI analysis not configured. Please check your Gemini API key.";
+        function displayPatents(patents) {
+            const container = document.getElementById('patentsList');
             
-            return `
-                <div class="patent-card">
-                    <div class="patent-header">
-                        <h3 class="patent-title">${escapeHtml(patent.title)}</h3>
-                        <div class="patent-meta-grid">
-                            <div class="meta-item">
-                                <div class="meta-label">Patent ID</div>
-                                <div class="meta-value">${escapeHtml(patent.patent_id)}</div>
-                            </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Publication Date</div>
-                                <div class="meta-value">${formatDate(patent.publication_date)}</div>
-                            </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Inventor(s)</div>
-                                <div class="meta-value">${escapeHtml(patent.inventor || 'Unknown')}</div>
-                            </div>
-                            <div class="meta-item">
-                                <div class="meta-label">Assignee</div>
-                                <div class="meta-value">${escapeHtml(patent.assignee || 'Unknown')}</div>
-                            </div>
+            if (!patents || patents.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center">No patents found</p>';
+                return;
+            }
+
+            const html = patents.map(patent => `
+                <div class="patent-card bg-gray-50 rounded-lg p-4 border hover:shadow-md transition-all duration-200">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-semibold text-gray-900 flex-1 pr-4">${patent.title}</h3>
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded whitespace-nowrap">
+                            ${patent.status}
+                        </span>
+                    </div>
+                    
+                    <div class="text-sm text-gray-700 mb-3 leading-relaxed">
+                        ${patent.abstract.substring(0, 200)}${patent.abstract.length > 200 ? '...' : ''}
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 text-xs text-gray-600 mb-3">
+                        <div>
+                            <strong>Inventor:</strong> ${patent.inventor}
+                        </div>
+                        <div>
+                            <strong>Assignee:</strong> ${patent.assignee}
+                        </div>
+                        <div>
+                            <strong>Filed:</strong> ${patent.filing_date !== 'Unknown' ? new Date(patent.filing_date).toLocaleDateString() : 'Unknown'}
+                        </div>
+                        <div>
+                            <strong>App #:</strong> ${patent.patent_id}
                         </div>
                     </div>
                     
-                    <div class="patent-body">
-                        <div class="abstract-section">
-                            <div class="section-title">
-                                <i class="fas fa-file-text"></i>
-                                Abstract
-                            </div>
-                            <div class="abstract-content">
-                                ${escapeHtml(patent.snippet || patent.abstract || 'No abstract available')}
-                            </div>
+                    <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+                        <div class="text-xs text-gray-500">
+                            Class: ${patent.classification?.primary || 'Unknown'}
                         </div>
-                        
-                        ${hasAIAnalysis ? createAIAnalysisSection(patent, index) : createNoAISection()}
+                        <a href="${patent.url}" target="_blank" 
+                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            View Patent →
+                        </a>
                     </div>
                 </div>
-            `;
-        }
+            `).join('');
 
-        function createAIAnalysisSection(patent, index) {
-            // Extract summary from analysis (first paragraph or executive summary section)
-            const analysis = patent.analysis || '';
-            let summary = extractSummary(analysis);
-            
-            return `
-                <div class="ai-section">
-                    <div class="ai-header" onclick="toggleAIAnalysis(${index})">
-                        <div class="ai-title">
-                            <i class="fas fa-brain"></i>
-                            AI-Powered Business Intelligence
-                        </div>
-                        <button type="button" class="ai-toggle" id="toggle-${index}">
-                            View Full Analysis
-                        </button>
-                    </div>
-                    
-                    <div class="ai-summary">
-                        <div class="ai-summary-title">
-                            <i class="fas fa-lightbulb"></i>
-                            Executive Summary
-                        </div>
-                        <div class="ai-summary-content">
-                            ${formatText(summary)}
-                        </div>
-                    </div>
-                    
-                    <div class="ai-full-analysis" id="analysis-${index}">
-                        ${formatAnalysisText(analysis)}
-                    </div>
-                </div>
-            `;
-        }
-
-        function createNoAISection() {
-            return `
-                <div class="ai-section">
-                    <div class="alert alert-warning">
-                        <i class="fas fa-info-circle"></i>
-                        AI analysis is being processed. Refresh the page in a moment to see detailed insights.
-                    </div>
-                </div>
-            `;
-        }
-
-        function createLandscapeSection(landscape) {
-            return `
-                <div class="patent-card" style="margin-top: 3rem;">
-                    <div class="patent-header">
-                        <h3 class="patent-title">
-                            <i class="fas fa-chart-line" style="margin-right: 0.5rem; color: var(--primary);"></i>
-                            Patent Landscape Analysis
-                        </h3>
-                    </div>
-                    <div class="patent-body">
-                        <div class="abstract-content">
-                            ${formatAnalysisText(landscape)}
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function toggleAIAnalysis(index) {
-            const analysisDiv = document.getElementById(`analysis-${index}`);
-            const toggleBtn = document.getElementById(`toggle-${index}`);
-            
-            if (analysisDiv.classList.contains('show')) {
-                analysisDiv.classList.remove('show');
-                toggleBtn.innerHTML = '<i class="fas fa-eye"></i> View Full Analysis';
-            } else {
-                analysisDiv.classList.add('show');
-                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Analysis';
-            }
-        }
-
-        function extractSummary(analysis) {
-            // Try to extract executive summary or first meaningful paragraph
-            const lines = analysis.split('\n').filter(line => line.trim());
-            
-            // Look for executive summary section
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].toLowerCase().includes('executive summary') || lines[i].toLowerCase().includes('summary')) {
-                    // Return next few lines as summary
-                    return lines.slice(i + 1, i + 4).join(' ').trim();
-                }
-            }
-            
-            // Fallback to first substantial paragraph
-            for (let line of lines) {
-                if (line.length > 100 && !line.includes(':')) {
-                    return line.trim();
-                }
-            }
-            
-            // Last resort - take first 200 characters
-            return analysis.substring(0, 200) + '...';
-        }
-
-        function formatAnalysisText(text) {
-            return text
-                .replace(/(\d+\.\s*[A-Z][A-Z\s]+[:\-])/g, '<h4>$1</h4>')
-                .replace(/([A-Z][A-Za-z\s]+:)(?!\w)/g, '<strong>$1</strong>')
-                .replace(/\n\n/g, '</p><p>')
-                .replace(/\n/g, '<br>')
-                .replace(/^\s*/, '<p>')
-                .replace(/\s*$/, '</p>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>');
-        }
-
-        function formatText(text) {
-            return text
-                .replace(/\n/g, '<br>')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>');
-        }
-
-        function formatDate(dateString) {
-            try {
-                return new Date(dateString).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-            } catch {
-                return dateString;
-            }
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            container.innerHTML = html;
         }
 
         function showLoading() {
-            document.getElementById('resultsContainer').innerHTML = `
-                <div class="loading-container">
-                    <div class="loading-spinner"></div>
-                    <div class="loading-text">Searching Patent Database</div>
-                    <div class="loading-subtext">Analyzing patents and generating AI insights...</div>
-                </div>
-            `;
+            document.getElementById('loading').classList.remove('hidden');
+            document.getElementById('results').classList.add('hidden');
+            document.getElementById('error').classList.add('hidden');
         }
 
-        function showAlert(message, type) {
-            const alertClass = `alert-${type}`;
-            const icon = type === 'error' ? 'fas fa-exclamation-triangle' : 
-                        type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle';
-            
-            const alertHtml = `
-                <div class="alert ${alertClass}">
-                    <i class="${icon}"></i>
-                    ${message}
-                </div>
-            `;
-            
-            // Show alert at top of results or create temporary alert
-            const container = document.getElementById('resultsContainer');
-            if (container.innerHTML.includes('patent-card') || container.innerHTML.includes('loading-container')) {
-                container.innerHTML = alertHtml + container.innerHTML;
-            } else {
-                container.innerHTML = alertHtml;
-            }
-            
-            // Auto-hide success/warning alerts after 5 seconds
-            if (type !== 'error') {
-                setTimeout(() => {
-                    const alert = container.querySelector('.alert');
-                    if (alert) {
-                        alert.style.transition = 'opacity 0.5s ease';
-                        alert.style.opacity = '0';
-                        setTimeout(() => alert.remove(), 500);
-                    }
-                }, 5000);
-            }
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
         }
+
+        function showError(message) {
+            document.getElementById('error').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        // Enter key support
+        document.getElementById('keywords').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchPatents();
+        });
     </script>
 </body>
 </html>
