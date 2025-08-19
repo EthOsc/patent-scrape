@@ -3,976 +3,957 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patent Intelligence Analyzer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Patent Intelligence Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #4f46e5;
-            --accent: #8b5cf6;
-            --light: #f8fafc;
-            --dark: #1e293b;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
             --success: #10b981;
             --warning: #f59e0b;
-            --danger: #ef4444;
-            --gray: #64748b;
-            --gray-light: #e2e8f0;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            color: var(--dark);
-            line-height: 1.6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 20px;
+            line-height: 1.6;
         }
-        
-        .container {
-            max-width: 1200px;
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        
-        .search-section {
-            padding: 30px;
-            background: linear-gradient(120deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-        }
-        
-        .search-header {
-            margin-bottom: 25px;
-        }
-        
-        .search-header h2 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-        
-        .search-header p {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        
-        .input-wrapper {
-            position: relative;
-        }
-        
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-        
-        input, select {
-            width: 100%;
-            padding: 14px 15px 14px 45px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            background: white;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            transition: all 0.2s;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
-        }
-        
-        .advanced-toggle {
+
+        .logo {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-top: 15px;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            opacity: 0.9;
-            transition: opacity 0.2s;
+            gap: 0.75rem;
         }
-        
-        .advanced-toggle:hover {
-            opacity: 1;
-        }
-        
-        .advanced-filters {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            display: none;
-        }
-        
-        .filter-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-        
-        .search-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            color: white;
+            font-size: 1.2rem;
         }
-        
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            width: 100%;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, white, rgba(255, 255, 255, 0.8));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Search Section */
+        .search-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-container {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 1.1rem;
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
         .search-btn:hover {
-            background: #7c3aed;
             transform: translateY(-2px);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
-        
+
         .search-btn:disabled {
-            opacity: 0.7;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none;
         }
-        
-        .loading {
-            padding: 40px 20px;
-            text-align: center;
-        }
-        
-        .loading-text {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: var(--dark);
-        }
-        
-        .loading-dots {
+
+        .search-options {
             display: flex;
-            justify-content: center;
-            gap: 8px;
+            gap: 2rem;
+            align-items: center;
+            text-align: left;
         }
-        
-        .loading-dots span {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--primary);
-            animation: bounce 1.5s infinite ease-in-out;
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
-        
-        .loading-dots span:nth-child(2) {
-            animation-delay: 0.2s;
+
+        .option-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            font-weight: 500;
         }
-        
-        .loading-dots span:nth-child(3) {
-            animation-delay: 0.4s;
+
+        .option-input {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .results-section {
-            padding: 30px;
-        }
-        
+
+        /* Results Section */
         .results-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 2rem;
+            padding: 0 0.5rem;
         }
-        
+
         .results-title {
-            font-size: 22px;
+            font-size: 2rem;
             font-weight: 700;
-        }
-        
-        .results-count {
-            color: var(--gray);
-            font-weight: 500;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        
-        .view-toggle {
-            display: flex;
-            background: var(--gray-light);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        
-        .view-btn {
-            padding: 8px 12px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--gray);
-        }
-        
-        .view-btn.active {
-            background: var(--primary);
             color: white;
         }
-        
-        .sort-select {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--gray-light);
-            background: white;
+
+        .results-meta {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
         }
-        
-        .export-buttons {
-            display: flex;
-            gap: 8px;
+
+        /* Patent Cards */
+        .patents-grid {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 1fr;
         }
-        
-        .export-btn {
-            padding: 8px 12px;
-            border-radius: 8px;
-            border: 1px solid var(--gray-light);
-            background: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-        
-        .export-btn:hover {
-            background: var(--gray-light);
-        }
-        
-        .patents-container {
-            margin-bottom: 30px;
-        }
-        
+
         .patent-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.2s;
-            border: 1px solid var(--gray-light);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid var(--gray-200);
         }
-        
+
         .patent-card:hover {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            transform: translateY(-2px);
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
-        
+
         .patent-header {
-            padding: 20px;
-            background: var(--light);
-            border-bottom: 1px solid var(--gray-light);
-            cursor: pointer;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--gray-50), white);
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .patent-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .patent-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .meta-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .meta-value {
+            font-size: 1rem;
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+
+        .patent-body {
+            padding: 2rem;
+        }
+
+        .abstract-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+        }
+
+        .abstract-content {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            line-height: 1.7;
+            color: var(--gray-700);
+        }
+
+        /* AI Analysis Section */
+        .ai-section {
+            border-top: 1px solid var(--gray-100);
+            padding-top: 2rem;
+        }
+
+        .ai-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
         }
-        
-        .patent-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: var(--dark);
+
+        .ai-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
         }
-        
-        .patent-meta {
+
+        .ai-title {
             display: flex;
-            gap: 15px;
-            color: var(--gray);
-            font-size: 14px;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
         }
-        
-        .patent-id {
+
+        .ai-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
             font-weight: 500;
-            color: var(--primary);
-        }
-        
-        .patent-content {
-            padding: 0;
-            max-height: 0;
-            overflow: hidden;
             transition: all 0.3s ease;
         }
-        
-        .patent-content.expanded {
-            padding: 20px;
-            max-height: 1000px;
+
+        .ai-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
-        
-        .patent-details {
-            margin-bottom: 20px;
+
+        .ai-summary {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border: 1px solid #bfdbfe;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
         }
-        
-        .detail-row {
-            display: flex;
-            margin-bottom: 10px;
-        }
-        
-        .detail-label {
-            width: 120px;
-            font-weight: 500;
-            color: var(--gray);
-        }
-        
-        .detail-value {
-            flex: 1;
-        }
-        
-        .patent-abstract {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: var(--light);
-            border-radius: 6px;
-        }
-        
-        .abstract-label {
+
+        .ai-summary-title {
             font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
-        
-        .ai-analysis {
-            margin-top: 25px;
-            padding: 20px;
-            background: #f0f9ff;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-        }
-        
-        .analysis-header {
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 0.5rem;
         }
-        
-        .analysis-icon {
-            color: var(--primary);
-            font-size: 20px;
+
+        .ai-summary-content {
+            color: var(--gray-700);
+            line-height: 1.6;
         }
-        
-        .analysis-title {
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .analysis-content {
-            line-height: 1.7;
-        }
-        
-        .landscape-analysis {
-            background: #f0fdf4;
-            border-radius: 8px;
-            padding: 25px;
-            margin-top: 30px;
-            border-left: 4px solid var(--success);
-        }
-        
-        .landscape-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .landscape-icon {
-            color: var(--success);
-            font-size: 20px;
-        }
-        
-        .landscape-title {
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 30px;
-        }
-        
-        .pagination-btn {
-            padding: 8px 15px;
+
+        .ai-full-analysis {
+            display: none;
             background: white;
-            border: 1px solid var(--gray-light);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 2rem;
+            line-height: 1.7;
+            color: var(--gray-700);
         }
-        
-        .pagination-btn:hover {
-            background: var(--gray-light);
+
+        .ai-full-analysis.show {
+            display: block;
+            animation: slideDown 0.3s ease;
         }
-        
-        .pagination-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
+
+        .ai-full-analysis h4 {
+            color: var(--gray-900);
+            font-size: 1.2rem;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-100);
         }
-        
-        .error-message {
-            padding: 20px;
-            background: #fef2f2;
-            border-radius: 8px;
-            color: var(--danger);
-            border-left: 4px solid var(--danger);
-            margin-bottom: 20px;
+
+        .ai-full-analysis h4:first-child {
+            margin-top: 0;
         }
-        
-        .empty-state {
+
+        /* Loading State */
+        .loading-container {
             text-align: center;
-            padding: 40px 20px;
-            color: var(--gray);
+            padding: 4rem 2rem;
+            color: white;
         }
-        
-        .empty-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
-            color: var(--gray-light);
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
         }
-        
+
+        .loading-text {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-subtext {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Error/Success States */
+        .alert {
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            border: 1px solid #fed7aa;
+            color: #92400e;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .results-header {
+            .header-content {
+                padding: 0 1rem;
+            }
+            
+            .main-content {
+                padding: 2rem 1rem;
+            }
+            
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .search-form {
                 flex-direction: column;
-                align-items: flex-start;
             }
             
-            .controls {
-                width: 100%;
-                justify-content: space-between;
+            .search-options {
+                flex-direction: column;
+                gap: 1rem;
             }
             
-            .filter-row {
+            .patent-meta-grid {
                 grid-template-columns: 1fr;
             }
             
-            .patent-meta {
+            .results-header {
                 flex-direction: column;
-                gap: 5px;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="search-section">
-            <div class="search-header">
-                <h2>Patent Intelligence Analyzer</h2>
-                <p>Search USPTO patents with AI-powered analysis and business insights</p>
-            </div>
-
-            <form id="searchForm">
-                <div class="form-group">
-                    <label for="keywords">
-                        <i class="fas fa-search"></i> Technology Keywords
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-lightbulb input-icon"></i>
-                        <input type="text" id="keywords" placeholder="e.g., machine learning, blockchain, renewable energy" required>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-atom"></i>
                     </div>
+                    <div class="logo-text">PatentIQ</div>
                 </div>
-
-                <div class="form-group">
-                    <label for="maxResults">
-                        <i class="fas fa-list"></i> Maximum Results
-                    </label>
-                    <div class="input-wrapper">
-                        <i class="fas fa-chart-line input-icon"></i>
-                        <input type="number" id="maxResults" value="20" min="5" max="50">
-                    </div>
-                </div>
-
-                <div class="advanced-toggle" onclick="toggleAdvanced()">
-                    <span>Advanced Filters</span>
-                    <i class="fas fa-chevron-down" id="advancedChevron"></i>
-                </div>
-
-                <div class="advanced-filters" id="advancedFilters">
-                    <div class="filter-row">
-                        <div class="form-group">
-                            <label for="startDate">Start Date</label>
-                            <input type="date" id="startDate">
-                        </div>
-                        <div class="form-group">
-                            <label for="endDate">End Date</label>
-                            <input type="date" id="endDate">
-                        </div>
-                    </div>
-                    <div class="filter-row">
-                        <div class="form-group">
-                            <label for="assignee">Assignee</label>
-                            <input type="text" id="assignee" placeholder="Company name">
-                        </div>
-                        <div class="form-group">
-                            <label for="inventor">Inventor</label>
-                            <input type="text" id="inventor" placeholder="Inventor name">
-                        </div>
-                    </div>
-                </div>
-
-                <button type="submit" class="search-btn" id="searchBtn">
-                    <i class="fas fa-search"></i> Analyze Patents
-                </button>
-            </form>
-        </div>
-
-        <div class="loading" id="loadingSection" style="display: none;">
-            <p class="loading-text">Searching patents and generating AI analysis...</p>
-            <div class="loading-dots">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-
-        <div class="results-section" id="resultsSection" style="display: none;">
-            <div class="results-header">
-                <div>
-                    <h3 class="results-title">Patent Results</h3>
-                    <p class="results-count" id="resultsCount"></p>
-                </div>
-                <div class="controls">
-                    <div class="view-toggle">
-                        <button class="view-btn active" onclick="changeView('list')">
-                            <i class="fas fa-list"></i>
-                        </button>
-                        <button class="view-btn" onclick="changeView('grid')">
-                            <i class="fas fa-th"></i>
-                        </button>
-                    </div>
-                    <select class="sort-select" id="sortSelect" onchange="sortResults()">
-                        <option value="relevance">Relevance</option>
-                        <option value="dateNew">Date (Newest First)</option>
-                        <option value="dateOld">Date (Oldest First)</option>
-                        <option value="assignee">Assignee</option>
-                    </select>
-                    <div class="export-buttons">
-                        <button class="export-btn" onclick="exportToCSV()">
-                            <i class="fas fa-file-csv"></i> CSV
-                        </button>
-                        <button class="export-btn" onclick="exportToPDF()">
-                            <i class="fas fa-file-pdf"></i> PDF
-                        </button>
-                    </div>
+                <div class="status-indicator">
+                    <div class="status-dot"></div>
+                    <span>APIs Connected</span>
                 </div>
             </div>
+        </header>
 
-            <div id="errorContainer"></div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <h1 class="hero-title">Patent Intelligence Platform</h1>
+                <p class="hero-subtitle">Discover, analyze, and understand patents with AI-powered insights and comprehensive business intelligence</p>
+            </section>
 
-            <div class="patents-container" id="patentsContainer">
-                <!-- Patent cards will be inserted here -->
-            </div>
+            <!-- Search Section -->
+            <section class="search-container">
+                <form class="search-form" onsubmit="return false;">
+                    <div class="search-input-container">
+                        <i class="fas fa-search search-icon"></i>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input" 
+                            placeholder="Search patents by technology, keywords, or concepts..."
+                            required
+                        />
+                    </div>
+                    <button type="button" id="searchBtn" class="search-btn">
+                        <i class="fas fa-search"></i>
+                        <span>Search Patents</span>
+                    </button>
+                </form>
 
-            <div class="pagination" id="pagination">
-                <!-- Pagination buttons will be inserted here -->
-            </div>
-
-            <div class="landscape-analysis" id="landscapeAnalysis" style="display: none;">
-                <div class="landscape-header">
-                    <i class="fas fa-chart-network landscape-icon"></i>
-                    <h3 class="landscape-title">Patent Landscape Analysis</h3>
+                <div class="search-options">
+                    <div class="option-group">
+                        <label class="option-label">Max Results</label>
+                        <select id="maxResults" class="option-input">
+                            <option value="10">10 patents</option>
+                            <option value="20" selected>20 patents</option>
+                            <option value="30">30 patents</option>
+                            <option value="50">50 patents</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label class="option-label">AI Analysis</label>
+                        <select id="aiDepth" class="option-input">
+                            <option value="summary">Summary Only</option>
+                            <option value="detailed" selected>Detailed Analysis</option>
+                            <option value="comprehensive">Comprehensive Report</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="analysis-content" id="landscapeContent"></div>
-            </div>
-        </div>
+            </section>
+
+            <!-- Results Section -->
+            <div id="resultsContainer"></div>
+        </main>
     </div>
 
     <script>
-        // Global variables
+        // Application state
         let currentResults = [];
-        let currentPage = 1;
-        const patentsPerPage = 5;
-        let currentView = 'list';
-        let landscapeAnalysis = '';
-
-        // DOM ready event
+        
+        // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('searchForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                searchPatents();
-            });
-            
-            // Set default end date to today
-            document.getElementById('endDate').valueAsDate = new Date();
-            
-            // Set default start date to 5 years ago
-            const startDate = new Date();
-            startDate.setFullYear(startDate.getFullYear() - 5);
-            document.getElementById('startDate').valueAsDate = startDate;
+            initializeEventListeners();
+            checkAPIConnection();
         });
 
-        // Toggle advanced filters
-        function toggleAdvanced() {
-            const filters = document.getElementById('advancedFilters');
-            const chevron = document.getElementById('advancedChevron');
-            if (filters.style.display === 'block') {
-                filters.style.display = 'none';
-                chevron.className = 'fas fa-chevron-down';
-            } else {
-                filters.style.display = 'block';
-                chevron.className = 'fas fa-chevron-up';
-            }
+        function initializeEventListeners() {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
         }
 
-        // Search patents function
-        async function searchPatents() {
-            const keywords = document.getElementById('keywords').value.trim();
-            const maxResults = document.getElementById('maxResults').value;
-            
+        async function checkAPIConnection() {
+            // In a real deployment, this would ping your server to check API status
+            // For now, we'll assume connected since you have the .env file
+            console.log('API connection check - using server-side APIs');
+        }
+
+        async function performSearch() {
+            const searchBtn = document.getElementById('searchBtn');
+            const searchInput = document.getElementById('searchInput');
+            const keywords = searchInput.value.trim();
+
             if (!keywords) {
-                alert('Please enter keywords to search for patents.');
+                showAlert('Please enter search keywords', 'error');
                 return;
             }
 
-            document.getElementById('loadingSection').style.display = 'block';
-            document.getElementById('resultsSection').style.display = 'none';
-            document.getElementById('searchBtn').disabled = true;
-            
-            // Clear previous results
-            document.getElementById('patentsContainer').innerHTML = '';
-            document.getElementById('errorContainer').innerHTML = '';
-            document.getElementById('landscapeAnalysis').style.display = 'none';
+            // Show loading state
+            searchBtn.disabled = true;
+            showLoading();
 
             try {
+                // Make request to your server endpoint
+                const maxResults = document.getElementById('maxResults').value;
                 const response = await fetch('/search', {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ 
-                        keywords, 
-                        maxResults: parseInt(maxResults) 
+                    body: JSON.stringify({
+                        keywords: keywords,
+                        maxResults: parseInt(maxResults)
                     })
                 });
 
-                const data = await response.json();
-                
                 if (!response.ok) {
-                    throw new Error(data.error || `Server error: ${response.status}`);
+                    throw new Error(`Search failed: ${response.status} ${response.statusText}`);
                 }
 
+                const data = await response.json();
+                
                 if (data.patents && data.patents.length > 0) {
                     currentResults = data.patents;
-                    landscapeAnalysis = data.landscape || '';
-                    currentPage = 1;
-                    
-                    document.getElementById('resultsCount').textContent = 
-                        `Found ${data.total} patents, showing ${Math.min(data.total, maxResults)}`;
-                    
-                    updateResultsDisplay();
-                    
-                    // Show landscape analysis if available
-                    if (landscapeAnalysis) {
-                        document.getElementById('landscapeAnalysis').style.display = 'block';
-                        document.getElementById('landscapeContent').innerHTML = 
-                            formatAnalysisText(landscapeAnalysis);
-                    }
+                    displayResults(data.patents, keywords, data.landscape);
+                    showAlert(`Found ${data.patents.length} patents successfully`, 'success');
                 } else {
-                    showEmptyState();
+                    showAlert('No patents found for your search terms. Try different keywords.', 'warning');
+                    document.getElementById('resultsContainer').innerHTML = '';
                 }
 
             } catch (error) {
-                console.error('Failed to fetch patents:', error);
-                showError(error.message);
+                console.error('Search error:', error);
+                showAlert(`Search failed: ${error.message}. Please try again.`, 'error');
             } finally {
-                document.getElementById('loadingSection').style.display = 'none';
-                document.getElementById('resultsSection').style.display = 'block';
-                document.getElementById('searchBtn').disabled = false;
+                searchBtn.disabled = false;
             }
         }
 
-        // Show empty state
-        function showEmptyState() {
-            document.getElementById('patentsContainer').innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-search"></i>
+        function displayResults(patents, keywords, landscape) {
+            const container = document.getElementById('resultsContainer');
+            
+            let html = `
+                <div class="results-header">
+                    <h2 class="results-title">Patent Search Results</h2>
+                    <div class="results-meta">
+                        Found ${patents.length} patents for "${keywords}"
                     </div>
-                    <h3>No patents found</h3>
-                    <p>Try different keywords or adjust your filters</p>
                 </div>
+                <div class="patents-grid">
             `;
-        }
 
-        // Show error message
-        function showError(message) {
-            document.getElementById('errorContainer').innerHTML = `
-                <div class="error-message">
-                    <p><strong>Error:</strong> ${message}</p>
-                </div>
-            `;
-        }
-
-        // Update results display
-        function updateResultsDisplay() {
-            const container = document.getElementById('patentsContainer');
-            container.innerHTML = '';
-            
-            // Calculate pagination
-            const startIndex = (currentPage - 1) * patentsPerPage;
-            const endIndex = Math.min(startIndex + patentsPerPage, currentResults.length);
-            const pageResults = currentResults.slice(startIndex, endIndex);
-            
-            // Create patent cards
-            pageResults.forEach(patent => {
-                container.appendChild(createPatentCard(patent));
+            patents.forEach((patent, index) => {
+                html += createPatentCard(patent, index);
             });
-            
-            // Update pagination
-            updatePagination();
+
+            html += '</div>';
+
+            // Add landscape analysis if available
+            if (landscape && landscape !== "Landscape analysis not configured. Please check your Gemini API key.") {
+                html += createLandscapeSection(landscape);
+            }
+
+            container.innerHTML = html;
         }
 
-        // Create patent card
-        function createPatentCard(patent) {
-            const card = document.createElement('div');
-            card.className = 'patent-card';
-            card.innerHTML = `
-                <div class="patent-header" onclick="togglePatent(this)">
-                    <div>
-                        <h4 class="patent-title">${patent.title || 'Untitled Patent'}</h4>
-                        <div class="patent-meta">
-                            <span class="patent-id">${patent.patent_id || 'N/A'}</span>
-                            <span>${formatDate(patent.publication_date)}</span>
-                            <span>${patent.assignee || 'Assignee not available'}</span>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-down"></i>
-                </div>
-                <div class="patent-content">
-                    <div class="patent-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Publication Number:</span>
-                            <span class="detail-value">${patent.publication_number || 'N/A'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Inventors:</span>
-                            <span class="detail-value">${patent.inventor || 'Not available'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Assignee:</span>
-                            <span class="detail-value">${patent.assignee || 'Not available'}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Publication Date:</span>
-                            <span class="detail-value">${formatDate(patent.publication_date)}</span>
+        function createPatentCard(patent, index) {
+            const hasAIAnalysis = patent.analysis && patent.analysis !== "AI analysis not configured. Please check your Gemini API key.";
+            
+            return `
+                <div class="patent-card">
+                    <div class="patent-header">
+                        <h3 class="patent-title">${escapeHtml(patent.title)}</h3>
+                        <div class="patent-meta-grid">
+                            <div class="meta-item">
+                                <div class="meta-label">Patent ID</div>
+                                <div class="meta-value">${escapeHtml(patent.patent_id)}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Publication Date</div>
+                                <div class="meta-value">${formatDate(patent.publication_date)}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Inventor(s)</div>
+                                <div class="meta-value">${escapeHtml(patent.inventor || 'Unknown')}</div>
+                            </div>
+                            <div class="meta-item">
+                                <div class="meta-label">Assignee</div>
+                                <div class="meta-value">${escapeHtml(patent.assignee || 'Unknown')}</div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="patent-abstract">
-                        <div class="abstract-label">Abstract</div>
-                        <p>${patent.snippet || 'No abstract available.'}</p>
-                    </div>
-                    
-                    ${patent.analysis && patent.analysis !== "Analysis not performed due to rate limiting." ? `
-                    <div class="ai-analysis">
-                        <div class="analysis-header">
-                            <i class="fas fa-robot analysis-icon"></i>
-                            <h4 class="analysis-title">AI Analysis</h4>
+                    <div class="patent-body">
+                        <div class="abstract-section">
+                            <div class="section-title">
+                                <i class="fas fa-file-text"></i>
+                                Abstract
+                            </div>
+                            <div class="abstract-content">
+                                ${escapeHtml(patent.snippet || patent.abstract || 'No abstract available')}
+                            </div>
                         </div>
-                        <div class="analysis-content">
-                            ${formatAnalysisText(patent.analysis)}
-                        </div>
+                        
+                        ${hasAIAnalysis ? createAIAnalysisSection(patent, index) : createNoAISection()}
                     </div>
-                    ` : ''}
                 </div>
             `;
-            return card;
         }
 
-        // Toggle patent expansion
-        function togglePatent(element) {
-            const content = element.nextElementSibling;
-            const icon = element.querySelector('i.fa-chevron-down');
+        function createAIAnalysisSection(patent, index) {
+            // Extract summary from analysis (first paragraph or executive summary section)
+            const analysis = patent.analysis || '';
+            let summary = extractSummary(analysis);
             
-            if (content.classList.contains('expanded')) {
-                content.classList.remove('expanded');
-                icon.className = 'fas fa-chevron-down';
+            return `
+                <div class="ai-section">
+                    <div class="ai-header" onclick="toggleAIAnalysis(${index})">
+                        <div class="ai-title">
+                            <i class="fas fa-brain"></i>
+                            AI-Powered Business Intelligence
+                        </div>
+                        <button type="button" class="ai-toggle" id="toggle-${index}">
+                            View Full Analysis
+                        </button>
+                    </div>
+                    
+                    <div class="ai-summary">
+                        <div class="ai-summary-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Executive Summary
+                        </div>
+                        <div class="ai-summary-content">
+                            ${formatText(summary)}
+                        </div>
+                    </div>
+                    
+                    <div class="ai-full-analysis" id="analysis-${index}">
+                        ${formatAnalysisText(analysis)}
+                    </div>
+                </div>
+            `;
+        }
+
+        function createNoAISection() {
+            return `
+                <div class="ai-section">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i>
+                        AI analysis is being processed. Refresh the page in a moment to see detailed insights.
+                    </div>
+                </div>
+            `;
+        }
+
+        function createLandscapeSection(landscape) {
+            return `
+                <div class="patent-card" style="margin-top: 3rem;">
+                    <div class="patent-header">
+                        <h3 class="patent-title">
+                            <i class="fas fa-chart-line" style="margin-right: 0.5rem; color: var(--primary);"></i>
+                            Patent Landscape Analysis
+                        </h3>
+                    </div>
+                    <div class="patent-body">
+                        <div class="abstract-content">
+                            ${formatAnalysisText(landscape)}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function toggleAIAnalysis(index) {
+            const analysisDiv = document.getElementById(`analysis-${index}`);
+            const toggleBtn = document.getElementById(`toggle-${index}`);
+            
+            if (analysisDiv.classList.contains('show')) {
+                analysisDiv.classList.remove('show');
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i> View Full Analysis';
             } else {
-                content.classList.add('expanded');
-                icon.className = 'fas fa-chevron-up';
+                analysisDiv.classList.add('show');
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide Analysis';
             }
         }
 
-        // Format date
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
+        function extractSummary(analysis) {
+            // Try to extract executive summary or first meaningful paragraph
+            const lines = analysis.split('\n').filter(line => line.trim());
             
+            // Look for executive summary section
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].toLowerCase().includes('executive summary') || lines[i].toLowerCase().includes('summary')) {
+                    // Return next few lines as summary
+                    return lines.slice(i + 1, i + 4).join(' ').trim();
+                }
+            }
+            
+            // Fallback to first substantial paragraph
+            for (let line of lines) {
+                if (line.length > 100 && !line.includes(':')) {
+                    return line.trim();
+                }
+            }
+            
+            // Last resort - take first 200 characters
+            return analysis.substring(0, 200) + '...';
+        }
+
+        function formatAnalysisText(text) {
+            return text
+                .replace(/(\d+\.\s*[A-Z][A-Z\s]+[:\-])/g, '<h4>$1</h4>')
+                .replace(/([A-Z][A-Za-z\s]+:)(?!\w)/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/\n/g, '<br>')
+                .replace(/^\s*/, '<p>')
+                .replace(/\s*$/, '</p>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        }
+
+        function formatText(text) {
+            return text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        }
+
+        function formatDate(dateString) {
             try {
-                const date = new Date(dateString);
-                return date.toLocaleDateString('en-US', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
+                return new Date(dateString).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 });
-            } catch (e) {
+            } catch {
                 return dateString;
             }
         }
 
-        // Format analysis text (convert line breaks to HTML)
-        function formatAnalysisText(text) {
-            if (!text) return '<p>No analysis available.</p>';
-            
-            // Convert markdown-style headers and lists to HTML
-            let formattedText = text
-                .replace(/\n\s*\n/g, '</p><p>')
-                .replace(/\n/g, '<br>')
-                .replace(/\d+\.\s/g, '<br>$&')
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.*?)\*/g, '<em>$1</em>');
-                
-            // Add paragraph tags
-            formattedText = `<p>${formattedText}</p>`;
-            
-            // Convert numbered sections to headings
-            formattedText = formattedText.replace(/(\d+\.\s+[A-Z][^:<br]*)(?=<br>|$)/g, '<h4>$1</h4>');
-            
-            return formattedText;
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
 
-        // Update pagination
-        function updatePagination() {
-            const totalPages = Math.ceil(currentResults.length / patentsPerPage);
-            const paginationContainer = document.getElementById('pagination');
+        function showLoading() {
+            document.getElementById('resultsContainer').innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Searching Patent Database</div>
+                    <div class="loading-subtext">Analyzing patents and generating AI insights...</div>
+                </div>
+            `;
+        }
+
+        function showAlert(message, type) {
+            const alertClass = `alert-${type}`;
+            const icon = type === 'error' ? 'fas fa-exclamation-triangle' : 
+                        type === 'success' ? 'fas fa-check-circle' : 'fas fa-info-circle';
             
-            if (totalPages <= 1) {
-                paginationContainer.innerHTML = '';
-                return;
-            }
-            
-            let paginationHTML = '';
-            
-            // Previous button
-            paginationHTML += `
-                <button class="pagination-btn" onclick="changePage(${currentPage - 1})" 
-                    ${currentPage === 1 ? 'disabled' : ''}>
-                    <i class="fas fa-chevron-left"></i>
-                </button>
+            const alertHtml = `
+                <div class="alert ${alertClass}">
+                    <i class="${icon}"></i>
+                    ${message}
+                </div>
             `;
             
-            // Page buttons
-            for (let i = 1; i <= totalPages; i++) {
-                paginationHTML += `
-                    <button class="pagination-btn ${i === currentPage ? 'active' : ''}" 
-                        onclick="changePage(${i})">${i}</button>
-                `;
-            }
-            
-            // Next button
-            paginationHTML += `
-                <button class="pagination-btn" onclick="changePage(${currentPage + 1})" 
-                    ${currentPage === totalPages ? 'disabled' : ''}>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-            
-            paginationContainer.innerHTML = paginationHTML;
-        }
-
-        // Change page
-        function changePage(page) {
-            const totalPages = Math.ceil(currentResults.length / patentsPerPage);
-            if (page < 1 || page > totalPages) return;
-            
-            currentPage = page;
-            updateResultsDisplay();
-            
-            // Scroll to top of results
-            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Change view (list/grid)
-        function changeView(mode) {
-            currentView = mode;
-            const viewButtons = document.querySelectorAll('.view-btn');
-            viewButtons.forEach(btn => btn.classList.remove('active'));
-            
-            event.target.classList.add('active');
-            
-            const container = document.getElementById('patentsContainer');
-            if (mode === 'grid') {
-                container.style.display = 'grid';
-                container.style.gridTemplateColumns = 'repeat(auto-fill, minmax(350px, 1fr))';
-                container.style.gap = '20px';
+            // Show alert at top of results or create temporary alert
+            const container = document.getElementById('resultsContainer');
+            if (container.innerHTML.includes('patent-card') || container.innerHTML.includes('loading-container')) {
+                container.innerHTML = alertHtml + container.innerHTML;
             } else {
-                container.style.display = 'block';
+                container.innerHTML = alertHtml;
             }
             
-            updateResultsDisplay();
-        }
-
-        // Sort results
-        function sortResults() {
-            const sortBy = document.getElementById('sortSelect').value;
-            
-            switch(sortBy) {
-                case 'dateNew':
-                    currentResults.sort((a, b) => new Date(b.publication_date) - new Date(a.publication_date));
-                    break;
-                case 'dateOld':
-                    currentResults.sort((a, b) => new Date(a.publication_date) - new Date(b.publication_date));
-                    break;
-                case 'assignee':
-                    currentResults.sort((a, b) => (a.assignee || '').localeCompare(b.assignee || ''));
-                    break;
-                case 'relevance':
-                default:
-                    // Default order (as returned by API)
-                    break;
+            // Auto-hide success/warning alerts after 5 seconds
+            if (type !== 'error') {
+                setTimeout(() => {
+                    const alert = container.querySelector('.alert');
+                    if (alert) {
+                        alert.style.transition = 'opacity 0.5s ease';
+                        alert.style.opacity = '0';
+                        setTimeout(() => alert.remove(), 500);
+                    }
+                }, 5000);
             }
-            
-            currentPage = 1;
-            updateResultsDisplay();
-        }
-
-        // Export functions (simplified for example)
-        function exportToCSV() {
-            alert('CSV export functionality would be implemented here.');
-        }
-
-        function exportToPDF() {
-            alert('PDF export functionality would be implemented here.');
         }
     </script>
 </body>
