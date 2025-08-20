@@ -244,7 +244,7 @@ async function generatePracticalAnalysis(patents, searchTerm) {
     // Try different model names
     let model;
     try {
-      model = genAI.getGenerativeModel({ model: "gemini-pro" });
+      model = genAI.getGenerativeModel({ model: "gemini-2.0-flash });
     } catch (e) {
       try {
         model = genAI.getGenerativeModel({ model: "gemini-1.0-pro" });
