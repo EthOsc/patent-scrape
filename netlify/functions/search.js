@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { keywords, maxResults = 20 } = JSON.parse(event.body);
+    const { keywords, maxResults = 20, showApproved = false } = JSON.parse(event.body);
 
     if (!keywords || keywords.trim() === '') {
       return {
@@ -40,8 +40,8 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Get USPTO data using the proper API structure from the documentation
-    const patents = await getUSPTOData(keywords, maxResults);
+    // Get USPTO data using the proper API structure
+    const patents = await getUSPTOData(keywords, maxResults, showApproved);
     
     if (patents.length === 0) {
       return {
@@ -72,7 +72,8 @@ exports.handler = async (event, context) => {
           searchTerm: keywords,
           resultsCount: patents.length,
           timestamp: new Date().toISOString(),
-          dataSource: 'uspto'
+          dataSource: 'uspto',
+          patentType: showApproved ? 'approved' : 'new'
         }
       })
     };
@@ -90,21 +91,32 @@ exports.handler = async (event, context) => {
   }
 };
 
-async function getUSPTOData(keywords, maxResults) {
+async function getUSPTOData(keywords, maxResults, showApproved) {
   try {
-    // Use the proper USPTO API structure from their documentation
+    // Configure the API query based on patent type
+    const filters = [
+      {
+        name: "applicationMetaData.applicationTypeLabelName",
+        value: ["Utility"]
+      }
+    ];
+    
+    // Add filter for patent type
+    if (showApproved) {
+      filters.push({
+        name: "applicationMetaData.publicationCategoryBag",
+        value: ["Granted/Issued"]
+      });
+    } else {
+      filters.push({
+        name: "applicationMetaData.publicationCategoryBag",
+        value: ["Pre-Grant Publications - PGPub"]
+      });
+    }
+
     const searchPayload = {
       q: keywords,
-      filters: [
-        {
-          name: "applicationMetaData.applicationTypeLabelName",
-          value: ["Utility"]
-        },
-        {
-          name: "applicationMetaData.publicationCategoryBag",
-          value: ["Pre-Grant Publications - PGPub", "Granted/Issued"]
-        }
-      ],
+      filters: filters,
       rangeFilters: [
         {
           field: "applicationMetaData.filingDate",
@@ -202,8 +214,7 @@ async function getUSPTOData(keywords, maxResults) {
             : 'Unknown'
         },
         inventors_detailed: inventors,
-        assignees_detailed: assignees,
-        url: `https://patents.uspto.gov/patent/app/${patent.applicationNumberText}`
+        assignees_detailed: assignees
       };
     });
 
